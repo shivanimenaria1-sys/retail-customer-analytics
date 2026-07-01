@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-50;
+  }
+}
+
+/* Scoped .login-input overrides to force dark bg and white text on focus/autofills */
+.login-input {
+  background-color: #020617 !important;
+  color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+.login-input:focus,
+.login-input:active {
+  background-color: #020617 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+.login-input:-webkit-autofill,
+.login-input:-webkit-autofill:hover, 
+.login-input:-webkit-autofill:focus, 
+.login-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #020617 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.login-input:autofill,
+.login-input:autofill:hover,
+.login-input:autofill:focus,
+.login-input:autofill:active {
+  filter: none;
+  box-shadow: 0 0 0 1000px #020617 inset !important;
+  text-fill-color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
