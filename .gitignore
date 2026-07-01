@@ -131,3 +131,17 @@ yarn-error.log*
 *.tsv
 *.json
 !*.gitkeep
+
+# IDE Settings
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Databases
+*.db
+
+# Node Production Build
+dist/
