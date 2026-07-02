@@ -10,7 +10,10 @@ import {
   Sun, 
   Moon,
   LogOut,
-  TrendingUp
+  TrendingUp,
+  Sparkles,
+  Brain,
+  FileText
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -37,6 +40,9 @@ const Sidebar = () => {
     { name: 'Upload Dataset', path: '/upload', icon: UploadCloud },
     { name: 'Segments', path: '/segments', icon: PieChart },
     { name: 'Insights', path: '/insights', icon: Lightbulb },
+    { name: 'AI Insights', path: '/ai-insights', icon: Sparkles },
+    { name: 'AI Predictor', path: '/predictor', icon: Brain },
+    { name: 'Executive Reports', path: '/reports', icon: FileText },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
 

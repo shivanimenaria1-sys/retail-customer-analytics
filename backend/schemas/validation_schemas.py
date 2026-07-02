@@ -95,3 +95,32 @@ class UploadSummary(BaseModel):
     rows_imported: int
     clusters_distribution: Dict[str, int]
     status: str
+
+class AIRecommendation(BaseModel):
+    id: str
+    title: str
+    category: str  # opportunity, warning, optimization, risk
+    priority: str  # High, Medium, Low
+    business_impact: str
+    recommendation: str
+    expected_outcome: str
+    estimated_revenue_opportunity: float
+
+class AIRecommendationResponse(BaseModel):
+    total_recommendations: int
+    high_priority_actions: int
+    estimated_revenue_opportunity: float
+    recommendations: List[AIRecommendation]
+
+class SinglePredictResponse(BaseModel):
+    cluster: int
+    cohort_name: str
+    confidence: float
+    distance: float
+    business_description: str
+    recommendations: List[str]
+    value_category: str
+    pc1: float
+    pc2: float
+
+

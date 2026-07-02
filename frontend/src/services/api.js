@@ -14,12 +14,14 @@ export const dashboardService = {
   getClusters: () => api.get('/clusters').then(res => res.data),
   getClusterDetails: (id) => api.get(`/cluster/${id}`).then(res => res.data),
   getInsights: () => api.get('/insights').then(res => res.data),
+  getAIRecommendations: () => api.get('/ai-recommendations').then(res => res.data),
 };
 
 export const customerService = {
   getCustomers: (params, signal) => api.get('/customers', { params, signal }).then(res => res.data),
   getCustomerById: (id, signal) => api.get(`/customer/${id}`, { signal }).then(res => res.data),
   predictSegment: (payload) => api.post('/segment', payload).then(res => res.data),
+  predictSegmentDetails: (payload) => api.post('/predict', payload).then(res => res.data),
 };
 
 export const uploadService = {
@@ -33,6 +35,15 @@ export const uploadService = {
       onUploadProgress,
     }).then(res => res.data);
   },
+};
+
+export const reportService = {
+  getPreview: (title, companyName) => api.get('/report/preview', { params: { title, company_name: companyName } }).then(res => res.data),
+  exportPDFUrl: (title, companyName) => {
+    const encodedTitle = encodeURIComponent(title);
+    const encodedCompany = encodeURIComponent(companyName);
+    return `${API_BASE_URL}/report/export?title=${encodedTitle}&company_name=${encodedCompany}`;
+  }
 };
 
 export default api;

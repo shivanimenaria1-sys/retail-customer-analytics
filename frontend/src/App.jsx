@@ -8,7 +8,11 @@ import Upload from './pages/Upload';
 import Explorer from './pages/Explorer';
 import Segments from './pages/Segments';
 import Insights from './pages/Insights';
+import AIInsights from './pages/AIInsights';
+import Predictor from './pages/Predictor';
+import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -44,6 +48,9 @@ const AppRoutes = () => {
         <Route path="/upload" element={<Upload />} />
         <Route path="/segments" element={<Segments />} />
         <Route path="/insights" element={<Insights />} />
+        <Route path="/ai-insights" element={<AIInsights />} />
+        <Route path="/predictor" element={<Predictor />} />
+        <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session
 from backend.models import Customer, CustomerFeatures, CustomerSegments
 from backend.config import SCALER_PATH, KMEANS_MODEL_PATH
-from backend.schemas.validation_schemas import SinglePredictRequest, PredictResponse
+from backend.schemas.validation_schemas import SinglePredictRequest, PredictResponse, SinglePredictResponse
 from sklearn.decomposition import PCA
 from backend.utils.logger import logger
 
@@ -186,3 +186,79 @@ def predict_segment(request: SinglePredictRequest) -> PredictResponse:
         characteristics=cohort["characteristics"],
         recommendations=cohort["recommendations"]
     )
+
+def predict_customer_segment_details(request: SinglePredictRequest) -> SinglePredictResponse:
+    """
+    Forecasts segment assignment, PCA coordinates, distance to center, value category,
+    and confidence scores for a single customer profile.
+    """
+    if not SCALER_PATH.exists() or not KMEANS_MODEL_PATH.exists():
+        raise FileNotFoundError("Clustering models are not serialized yet. Please run the segmentation pipeline first.")
+
+    # Load scaler and model
+    scaler = joblib.load(SCALER_PATH)
+    kmeans = joblib.load(KMEANS_MODEL_PATH)
+
+    # Format vector matching CLUSTERING_FEATURES order
+    features_vector = np.array([[
+        request.Income,
+        request.Age,
+        request.Total_Spending,
+        request.Total_Purchases,
+        request.Average_Spending_Per_Purchase,
+        request.Customer_Tenure
+    ]])
+
+    # Scale vector
+    scaled_vector = scaler.transform(features_vector)
+
+    # Predict cluster
+    cluster_label = int(kmeans.predict(scaled_vector)[0])
+
+    # Calculate distances to all cluster centers
+    distances = kmeans.transform(scaled_vector)[0]
+    distance_to_center = float(distances[cluster_label])
+
+    # Calculate confidence score using softmax over negative distances
+    exp_neg_dist = np.exp(-distances)
+    confidence = float(exp_neg_dist[cluster_label] / np.sum(exp_neg_dist))
+
+    # Project PCA coordinates
+    pc1, pc2 = 0.0, 0.0
+    pca = get_fitted_pca()
+    if pca is not None:
+        pca_comps = pca.transform(scaled_vector)
+        pc1 = float(pca_comps[0, 0])
+        pc2 = float(pca_comps[0, 1])
+
+    cohort = COHORT_DETAILS.get(cluster_label, {
+        "name": "Unknown Segment",
+        "characteristics": "No profile available.",
+        "recommendations": []
+    })
+
+    # Value Category mapping
+    # Cluster 0: Mature Value Shoppers -> Medium
+    # Cluster 1: High-Value VIPs -> High
+    # Cluster 2: Frugal Loyalists -> Low
+    # Cluster 3: Unengaged Starters -> Low
+    value_category_map = {
+        0: "Medium",
+        1: "High",
+        2: "Low",
+        3: "Low"
+    }
+    value_category = value_category_map.get(cluster_label, "Low")
+
+    return SinglePredictResponse(
+        cluster=cluster_label,
+        cohort_name=cohort["name"],
+        confidence=round(confidence, 4),
+        distance=round(distance_to_center, 4),
+        business_description=cohort["characteristics"],
+        recommendations=cohort["recommendations"],
+        value_category=value_category,
+        pc1=pc1,
+        pc2=pc2
+    )
+

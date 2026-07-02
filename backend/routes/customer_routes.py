@@ -6,11 +6,12 @@ from backend.schemas.validation_schemas import (
     CustomerResponse, 
     SinglePredictRequest, 
     PredictResponse, 
-    UploadSummary
+    UploadSummary,
+    SinglePredictResponse
 )
 from backend.controllers.upload_controller import handle_csv_upload
 from backend.controllers.customer_controller import handle_get_customers, handle_get_customer_by_id
-from backend.controllers.segmentation_controller import handle_predict_segment
+from backend.controllers.segmentation_controller import handle_predict_segment, handle_predict_customer_segment_details
 
 router = APIRouter()
 
@@ -28,6 +29,14 @@ def segment_customer(request: SinglePredictRequest):
     Forecasts segment assignment, PCA coordinates, and recommendations for a single customer profile.
     """
     return handle_predict_segment(request)
+
+@router.post("/predict", response_model=SinglePredictResponse, summary="Predict customer segment with confidence and distance metrics", tags=["Customers"])
+def predict_customer(request: SinglePredictRequest):
+    """
+    Calculates dynamic customer segment predictions, confidence level, distance to cluster center, value category, and PCA coordinates.
+    """
+    return handle_predict_customer_segment_details(request)
+
 
 @router.get("/customers", response_model=List[CustomerResponse], summary="List customers", tags=["Customers"])
 def list_customers(
